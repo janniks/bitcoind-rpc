@@ -1,4 +1,4 @@
-interface RpcCallSpec {
+export interface RpcCallSpec {
   /** Mark in-wallet transaction <txid> as abandoned. This will mark this transaction and all its in-wallet descendants as abandoned which will allow. for their inputs to be respent.  It can be used to replace "stuck" or evicted transactions. It only works on transactions which are not included in a block and are not currently in the mempool. It has no effect on transactions which are already abandoned. https://developer.bitcoin.org/reference/rpc/abandontransaction.html */
   abandontransaction: ({
     txid,

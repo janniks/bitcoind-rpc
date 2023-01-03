@@ -1,6 +1,8 @@
 import "cross-fetch/polyfill";
 import { base64 } from "@scure/base";
 
+import { RpcCallSpec } from "./callspec";
+
 interface RpcOptions {
   host: string;
   port: number;
