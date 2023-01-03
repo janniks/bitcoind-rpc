@@ -1,7 +1,7 @@
 {
   "name": "@btc-helpers/rpc",
   "description": "Bitcoin Client Library to connect to Bitcoin Core via RPC",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "keywords": [
     "bitcoin",
     "rpc"

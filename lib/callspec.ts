@@ -18,10 +18,10 @@ export interface RpcCallSpec {
     /** The number of required signatures out of the n keys or addresses — required */
     nrequired: number;
     /** The bitcoin addresses or hex-encoded public keys — required */
-    keys: JSON;
+    keys: JSON[];
     /** A label to assign the addresses to — defaults to `optional` */
     label?: string;
-    /** The address type to use. Options are "legacy" "p2sh-segwit" and "bech32" — defaults to `-addresstype` */
+    /** The address type to use. Options are "legacy", "p2sh-segwit", and "bech32" — defaults to `set by -addresstype` */
     address_type?: string;
   }) => Promise<any>;
   /** Attempts to add or remove a node from the addnode list. Or try a connection to a node once. Nodes added using addnode (or -connect) are protected from DoS disconnection and are not required to be. full nodes/support SegWit as other outbound peers are (though such peers will not be synced from). https://developer.bitcoin.org/reference/rpc/addnode.html */
@@ -31,7 +31,7 @@ export interface RpcCallSpec {
   }: {
     /** The node (see getpeerinfo for nodes) — required */
     node: string;
-    /** 'add' to add a node to the list 'remove' to remove a node from the list 'onetry' to try a connection to the node once — required */
+    /** 'add' to add a node to the list, 'remove' to remove a node from the list, 'onetry' to try a connection to the node once — required */
     command: string;
   }) => Promise<any>;
   /** Analyzes and provides information about the current status of a PSBT and its inputs. https://developer.bitcoin.org/reference/rpc/analyzepsbt.html */
@@ -65,14 +65,14 @@ export interface RpcCallSpec {
     txs,
   }: {
     /** The base64 strings of partially signed transactions — required */
-    txs: JSON;
+    txs: JSON[];
   }) => Promise<any>;
   /** Combine multiple partially signed transactions into one transaction. The combined transaction may be another partially signed transaction or a . fully signed transaction. Arguments:. 1. txs                 (json array, required) The hex strings of partially signed transactions.      [.        "hexstring",    (string) A hex-encoded raw transaction.        ...      ]. https://developer.bitcoin.org/reference/rpc/combinerawtransaction.html */
   combinerawtransaction: ({
     txs,
   }: {
     /** The hex strings of partially signed transactions — required */
-    txs: JSON;
+    txs: JSON[];
   }) => Promise<any>;
   /** Converts a network serialized transaction to a PSBT. This should be used only with createrawtransaction and fundrawtransaction. createpsbt and walletcreatefundedpsbt should be used for new applications. https://developer.bitcoin.org/reference/rpc/converttopsbt.html */
   converttopsbt: ({
@@ -82,9 +82,9 @@ export interface RpcCallSpec {
   }?: {
     /** The hex string of a raw transaction — required */
     hexstring: string;
-    /** If true any signatures in the input will be discarded and conversion — defaults to `false` */
+    /** If true, any signatures in the input will be discarded and conversion — defaults to `false` */
     permitsigdata?: boolean;
-    /** Whether the transaction hex is a serialized witness transaction — defaults to `tests` */
+    /** Whether the transaction hex is a serialized witness transaction — defaults to `depends on heuristic tests` */
     iswitness?: boolean;
   }) => Promise<any>;
   /** Creates a multi-signature address with n signature of m keys required. It returns a json object with the address and redeemScript. https://developer.bitcoin.org/reference/rpc/createmultisig.html */
@@ -96,8 +96,8 @@ export interface RpcCallSpec {
     /** The number of required signatures out of the n keys — required */
     nrequired: number;
     /** The hex-encoded public keys — required */
-    keys: JSON;
-    /** The address type to use. Options are "legacy" "p2sh-segwit" and "bech32" — defaults to `legacy` */
+    keys: JSON[];
+    /** The address type to use. Options are "legacy", "p2sh-segwit", and "bech32" — defaults to `legacy` */
     address_type?: string;
   }) => Promise<any>;
   /** Creates a transaction in the Partially Signed Transaction format. Implements the Creator role. https://developer.bitcoin.org/reference/rpc/createpsbt.html */
@@ -108,9 +108,9 @@ export interface RpcCallSpec {
     replaceable,
   }?: {
     /** The json objects — required */
-    inputs: JSON;
-    /** The outputs (key-value pairs) where none of the keys are duplicated — required */
-    outputs: JSON;
+    inputs: JSON[];
+    /** The outputs (key-value pairs), where none of the keys are duplicated — required */
+    outputs: JSON[];
     /** Raw locktime. Non-0 value also locktime-activates inputs — defaults to `0` */
     locktime?: number;
     /** Marks this transaction as BIP125 replaceable — defaults to `false` */
@@ -124,9 +124,9 @@ export interface RpcCallSpec {
     replaceable,
   }?: {
     /** The inputs — required */
-    inputs: JSON;
-    /** The outputs (key-value pairs) where none of the keys are duplicated — required */
-    outputs: JSON;
+    inputs: JSON[];
+    /** The outputs (key-value pairs), where none of the keys are duplicated — required */
+    outputs: JSON[];
     /** Raw locktime. Non-0 value also locktime-activates inputs — defaults to `0` */
     locktime?: number;
     /** Marks this transaction as BIP125-replaceable — defaults to `false` */
@@ -142,7 +142,7 @@ export interface RpcCallSpec {
     descriptors,
     load_on_startup,
   }?: {
-    /** The name for the new wallet. If this is a path the wallet will be created at the path location — required */
+    /** The name for the new wallet. If this is a path, the wallet will be created at the path location — required */
     wallet_name: string;
     /** Disable the possibility of private keys (only watchonlys are possible in this mode) — defaults to `false` */
     disable_private_keys?: boolean;
@@ -150,11 +150,11 @@ export interface RpcCallSpec {
     blank?: boolean;
     /** Encrypt the wallet with this passphrase — defaults to `string` */
     passphrase?: string;
-    /** Keep track of coin reuse and treat dirty and clean coins differently with privacy considerations in mind — defaults to `false` */
+    /** Keep track of coin reuse, and treat dirty and clean coins differently with privacy considerations in mind — defaults to `false` */
     avoid_reuse?: boolean;
     /** Create a native descriptor wallet. The wallet will use descriptors internally to handle address creation — defaults to `false` */
     descriptors?: boolean;
-    /** Save wallet name to persistent settings and load on startup. True to add wallet to startup list false to remove null to leave unchanged — defaults to `null` */
+    /** Save wallet name to persistent settings and load on startup. True to add wallet to startup list, false to remove, null to leave unchanged — defaults to `null` */
     load_on_startup?: boolean;
   }) => Promise<any>;
   /** Return a JSON object representing the serialized, base64-encoded partially signed Bitcoin transaction. https://developer.bitcoin.org/reference/rpc/decodepsbt.html */
@@ -171,7 +171,7 @@ export interface RpcCallSpec {
   }?: {
     /** The transaction hex string — required */
     hexstring: string;
-    /** Whether the transaction hex is a serialized witness transaction — defaults to `tests` */
+    /** Whether the transaction hex is a serialized witness transaction — defaults to `depends on heuristic tests` */
     iswitness?: boolean;
   }) => Promise<any>;
   /** Decode a hex-encoded script. https://developer.bitcoin.org/reference/rpc/decodescript.html */
@@ -188,17 +188,17 @@ export interface RpcCallSpec {
   }?: {
     /** The descriptor — required */
     descriptor: string;
-    /** If a ranged descriptor is used this specifies the end or the range (in [beginend] notation) to derive — defaults to `optional` */
-    range?: number;
+    /** If a ranged descriptor is used, this specifies the end or the range (in [begin,end] notation) to derive — defaults to `optional` */
+    range?: number | number[];
   }) => Promise<any>;
   /** Immediately disconnects from the specified peer node. https://developer.bitcoin.org/reference/rpc/disconnectnode.html */
   disconnectnode: ({
     address,
     nodeid,
   }?: {
-    /** The IP address/port of the node — defaults to `nodeid` */
+    /** The IP address/port of the node — defaults to `fallback to nodeid` */
     address?: string;
-    /** The node ID (see getpeerinfo for node IDs) — defaults to `address` */
+    /** The node ID (see getpeerinfo for node IDs) — defaults to `fallback to address` */
     nodeid?: number;
   }) => Promise<any>;
   /** Reveals the private key corresponding to 'address'. Then the importprivkey can be used with this output. https://developer.bitcoin.org/reference/rpc/dumpprivkey.html */
@@ -219,7 +219,7 @@ export interface RpcCallSpec {
   encryptwallet: ({
     passphrase,
   }: {
-    /** The pass phrase to encrypt the wallet with. It must be at least 1 character but should be long — required */
+    /** The pass phrase to encrypt the wallet with. It must be at least 1 character, but should be long — required */
     passphrase: string;
   }) => Promise<any>;
   /** Estimates the approximate fee per kilobyte needed for a transaction to begin. confirmation within conf_target blocks if possible and return the number of blocks. for which the estimate is valid. Uses virtual transaction size as defined. in BIP 141 (witness data is discounted). https://developer.bitcoin.org/reference/rpc/estimatesmartfee.html */
@@ -239,7 +239,7 @@ export interface RpcCallSpec {
   }?: {
     /** A base64 string of a PSBT — required */
     psbt: string;
-    /** If true and the transaction is complete — defaults to `true` */
+    /** If true and the transaction is complete, — defaults to `true` */
     extract?: boolean;
   }) => Promise<any>;
   /** If the transaction has no inputs, they will be automatically selected to meet its out value. It will add at most one change output to the outputs. No existing outputs will be modified unless "subtractFeeFromOutputs" is specified. Note that inputs which were signed may need to be resigned after completion since in/outputs have been added. The inputs added will not be signed, use signrawtransactionwithkey.  or signrawtransactionwithwallet for that. Note that all existing inputs must have their previous output transaction be in the wallet. Note that all inputs selected must be of standard form and P2SH scripts must be. in the wallet using importaddress or addmultisigaddress (to calculate fees). You can see whether this is the case by checking the "solvable" field in the listunspent output. Only pay-to-pubkey, multisig, and P2SH versions thereof are currently supported for watch-only. https://developer.bitcoin.org/reference/rpc/fundrawtransaction.html */
@@ -252,7 +252,7 @@ export interface RpcCallSpec {
     hexstring: string;
     /** for backward compatibility: passing in a true instead of an object will result in {"includeWatching":true} — defaults to `optional` */
     options?: JSON;
-    /** Whether the transaction hex is a serialized witness transaction — defaults to `tests` */
+    /** Whether the transaction hex is a serialized witness transaction — defaults to `depends on heuristic tests` */
     iswitness?: boolean;
   }) => Promise<any>;
   /** Mine a block with a set of ordered transactions immediately to a specified address or descriptor (before the RPC call returns). https://developer.bitcoin.org/reference/rpc/generateblock.html */
@@ -263,7 +263,7 @@ export interface RpcCallSpec {
     /** The address or descriptor to send the newly generated bitcoin to — required */
     output: string;
     /** An array of hex strings which are either txids or raw transactions — required */
-    transactions: JSON;
+    transactions: JSON[];
   }) => Promise<any>;
   /** Mine blocks immediately to a specified address (before the RPC call returns). https://developer.bitcoin.org/reference/rpc/generatetoaddress.html */
   generatetoaddress: ({
@@ -295,7 +295,7 @@ export interface RpcCallSpec {
   getaddednodeinfo: ({
     node,
   }?: {
-    /** If provided return information about this specific node otherwise all nodes are returned — defaults to `nodes` */
+    /** If provided, return information about this specific node, otherwise all nodes are returned — defaults to `all nodes` */
     node?: string;
   }) => Promise<any>;
   /** Returns the list of addresses assigned the specified label. https://developer.bitcoin.org/reference/rpc/getaddressesbylabel.html */
@@ -323,7 +323,7 @@ export interface RpcCallSpec {
     dummy?: string;
     /** Only include transactions confirmed at least this many times — defaults to `0` */
     minconf?: number;
-    /** Also include balance in watch-only addresses (see 'importaddress') — defaults to `false` */
+    /** Also include balance in watch-only addresses (see 'importaddress') — defaults to `otherwise false` */
     include_watchonly?: boolean;
     /** (only available if avoid_reuse wallet flag is set) Do not include balance in dirty outputs; addresses are considered dirty if they have previously been used in a transaction — defaults to `true` */
     avoid_reuse?: boolean;
@@ -339,7 +339,7 @@ export interface RpcCallSpec {
   }?: {
     /** The block hash — required */
     blockhash: string;
-    /** 0 for hex-encoded data 1 for a json object and 2 for json object with transaction data — defaults to `1` */
+    /** 0 for hex-encoded data, 1 for a json object, and 2 for json object with transaction data — defaults to `1` */
     verbosity?: number;
   }) => Promise<any>;
   /** Result:. {                                         (json object).   "chain" : "str",                        (string) current network name (main, test, regtest).   "blocks" : n,                           (numeric) the height of the most-work fully-validated chain. The genesis block has height 0.   "headers" : n,                          (numeric) the current number of headers we have validated.   "bestblockhash" : "str",                (string) the hash of the currently best block.   "difficulty" : n,                       (numeric) the current difficulty.   "mediantime" : n,                       (numeric) median time for the current best block.   "verificationprogress" : n,             (numeric) estimate of verification progress [0..1].   "initialblockdownload" : true|false,    (boolean) (debug information) estimate of whether this node is in Initial Block Download mode.   "chainwork" : "hex",                    (string) total amount of work in active chain, in hexadecimal.   "size_on_disk" : n,                     (numeric) the estimated size of the block and undo files on disk.   "pruned" : true|false,                  (boolean) if the blocks are subject to pruning.   "pruneheight" : n,                      (numeric) lowest-height complete block stored (only present if pruning is enabled).   "automatic_pruning" : true|false,       (boolean) whether automatic pruning is enabled (only present if pruning is enabled).   "prune_target_size" : n,                (numeric) the target size used by pruning (only present if automatic pruning is enabled).   "softforks" : {                         (json object) status of softforks.     "xxxx" : {                            (json object) name of the softfork.       "type" : "str",                     (string) one of "buried", "bip9".       "bip9" : {                          (json object) status of bip9 softforks (only for "bip9" type).         "status" : "str",                 (string) one of "defined", "started", "locked_in", "active", "failed".         "bit" : n,                        (numeric) the bit (0-28) in the block version field used to signal this softfork (only for "started" status).         "start_time" : xxx,               (numeric) the minimum median time past of a block at which the bit gains its meaning.         "timeout" : xxx,                  (numeric) the median time past of a block at which the deployment is considered failed if not yet locked in.         "since" : n,                      (numeric) height of the first block to which the status applies.         "min_activation_height" : n,      (numeric) minimum height of blocks for which the rules may be enforced.         "statistics" : {                  (json object) numeric statistics about BIP9 signalling for a softfork (only for "started" status).           "period" : n,                   (numeric) the length in blocks of the BIP9 signalling period.           "threshold" : n,                (numeric) the number of blocks with the version bit set required to activate the feature.           "elapsed" : n,                  (numeric) the number of blocks elapsed since the beginning of the current period.           "count" : n,                    (numeric) the number of blocks with the version bit set in the current period.           "possible" : true|false         (boolean) returns false if there are not enough blocks left in this period to pass activation threshold.         }.       },.       "height" : n,                       (numeric) height of the first block which the rules are or will be enforced (only for "buried" type, or "bip9" type with "active" status).       "active" : true|false               (boolean) true if the rules are enforced for the mempool and the next block.     },.     ...   },.   "warnings" : "str"                      (string) any network and blockchain warnings. }. https://developer.bitcoin.org/reference/rpc/getblockchaininfo.html */
@@ -370,7 +370,7 @@ export interface RpcCallSpec {
   }?: {
     /** The block hash — required */
     blockhash: string;
-    /** true for a json object false for the hex-encoded data — defaults to `true` */
+    /** true for a json object, false for the hex-encoded data — defaults to `true` */
     verbose?: boolean;
   }) => Promise<any>;
   /** Compute per block statistics for a given window. All amounts are in satoshis. It won't work for some heights with pruning. https://developer.bitcoin.org/reference/rpc/getblockstats.html */
@@ -379,9 +379,9 @@ export interface RpcCallSpec {
     stats,
   }?: {
     /** The block hash or height of the target block — required */
-    hash_or_height: string;
-    /** Values to plot (see result below) — defaults to `values` */
-    stats?: JSON;
+    hash_or_height: string | number;
+    /** Values to plot (see result below) — defaults to `all values` */
+    stats?: JSON[];
   }) => Promise<any>;
   /** If the request parameters include a 'mode' key, that is used to explicitly select between the default 'template' request or a 'proposal'. It returns data needed to construct a block to work on. For full specification, see BIPs 22, 23, 9, and 145:.     https://github.com/bitcoin/bips/blob/master/bip-0022.mediawiki.     https://github.com/bitcoin/bips/blob/master/bip-0023.mediawiki.     https://github.com/bitcoin/bips/blob/master/bip-0009.mediawiki#getblocktemplate_changes.     https://github.com/bitcoin/bips/blob/master/bip-0145.mediawiki. https://developer.bitcoin.org/reference/rpc/getblocktemplate.html */
   getblocktemplate: ({
@@ -397,9 +397,9 @@ export interface RpcCallSpec {
     nblocks,
     blockhash,
   }?: {
-    /** Size of the window in number of blocks — defaults to `month` */
+    /** Size of the window in number of blocks — defaults to `one month` */
     nblocks?: number;
-    /** The hash of the block that ends the window — defaults to `tip` */
+    /** The hash of the block that ends the window — defaults to `chain tip` */
     blockhash?: string;
   }) => Promise<any>;
   /** Returns the number of connections to other nodes. https://developer.bitcoin.org/reference/rpc/getconnectioncount.html */
@@ -434,7 +434,7 @@ export interface RpcCallSpec {
   }?: {
     /** The transaction id (must be in mempool) — required */
     txid: string;
-    /** True for a json object false for array of transaction ids — defaults to `false` */
+    /** True for a json object, false for array of transaction ids — defaults to `false` */
     verbose?: boolean;
   }) => Promise<any>;
   /** If txid is in the mempool, returns all in-mempool descendants. https://developer.bitcoin.org/reference/rpc/getmempooldescendants.html */
@@ -444,7 +444,7 @@ export interface RpcCallSpec {
   }?: {
     /** The transaction id (must be in mempool) — required */
     txid: string;
-    /** True for a json object false for array of transaction ids — defaults to `false` */
+    /** True for a json object, false for array of transaction ids — defaults to `false` */
     verbose?: boolean;
   }) => Promise<any>;
   /** Returns mempool data for given transaction. https://developer.bitcoin.org/reference/rpc/getmempoolentry.html */
@@ -465,7 +465,7 @@ export interface RpcCallSpec {
     nblocks,
     height,
   }?: {
-    /** The number of blocks or -1 for blocks since last difficulty change — defaults to `120` */
+    /** The number of blocks, or -1 for blocks since last difficulty change — defaults to `120` */
     nblocks?: number;
     /** To estimate at the time of the given height — defaults to `-1` */
     height?: number;
@@ -477,9 +477,9 @@ export interface RpcCallSpec {
     label,
     address_type,
   }?: {
-    /** The label name for the address to be linked to. It can also be set to the empty string "" to represent the default label. The label does not need to exist it will be created if there is no label by the given name — defaults to `""` */
+    /** The label name for the address to be linked to. It can also be set to the empty string "" to represent the default label. The label does not need to exist, it will be created if there is no label by the given name — defaults to `""` */
     label?: string;
-    /** The address type to use. Options are "legacy" "p2sh-segwit" and "bech32" — defaults to `-addresstype` */
+    /** The address type to use. Options are "legacy", "p2sh-segwit", and "bech32" — defaults to `set by -addresstype` */
     address_type?: string;
   }) => Promise<any>;
   /** Return known addresses which can potentially be used to find new nodes in the network. https://developer.bitcoin.org/reference/rpc/getnodeaddresses.html */
@@ -495,7 +495,7 @@ export interface RpcCallSpec {
   getrawchangeaddress: ({
     address_type,
   }?: {
-    /** The address type to use. Options are "legacy" "p2sh-segwit" and "bech32" — defaults to `-changetype` */
+    /** The address type to use. Options are "legacy", "p2sh-segwit", and "bech32" — defaults to `set by -changetype` */
     address_type?: string;
   }) => Promise<any>;
   /** Returns all transaction ids in memory pool as a json array of string transaction ids. https://developer.bitcoin.org/reference/rpc/getrawmempool.html */
@@ -503,9 +503,9 @@ export interface RpcCallSpec {
     verbose,
     mempool_sequence,
   }?: {
-    /** True for a json object false for array of transaction ids — defaults to `false` */
+    /** True for a json object, false for array of transaction ids — defaults to `false` */
     verbose?: boolean;
-    /** If verbose=false returns a json object with transaction list and mempool sequence number attached — defaults to `false` */
+    /** If verbose=false, returns a json object with transaction list and mempool sequence number attached — defaults to `false` */
     mempool_sequence?: boolean;
   }) => Promise<any>;
   /** Return the raw transaction data. https://developer.bitcoin.org/reference/rpc/getrawtransaction.html */
@@ -516,7 +516,7 @@ export interface RpcCallSpec {
   }?: {
     /** The transaction id — required */
     txid: string;
-    /** If false return a string otherwise return a json object — defaults to `false` */
+    /** If false, return a string, otherwise return a json object — defaults to `false` */
     verbose?: boolean;
     /** The block in which to look for the transaction — defaults to `optional` */
     blockhash?: string;
@@ -536,7 +536,7 @@ export interface RpcCallSpec {
     label,
     minconf,
   }?: {
-    /** The selected label may be the default label using "" — required */
+    /** The selected label, may be the default label using "" — required */
     label: string;
     /** Only include transactions confirmed at least this many times — defaults to `1` */
     minconf?: number;
@@ -551,7 +551,7 @@ export interface RpcCallSpec {
   }?: {
     /** The transaction id — required */
     txid: string;
-    /** Whether to include watch-only addresses in balance calculation and details[] — defaults to `false` */
+    /** Whether to include watch-only addresses in balance calculation and details[] — defaults to `otherwise false` */
     include_watchonly?: boolean;
     /** Whether to include a `decoded` field containing the decoded transaction (equivalent to RPC decoderawtransaction) — defaults to `false` */
     verbose?: boolean;
@@ -575,15 +575,15 @@ export interface RpcCallSpec {
     blockhash,
   }?: {
     /** The txids to filter — required */
-    txids: JSON;
-    /** If specified looks for txid in the block with this hash — defaults to `optional` */
+    txids: JSON[];
+    /** If specified, looks for txid in the block with this hash — defaults to `optional` */
     blockhash?: string;
   }) => Promise<any>;
   /** Returns statistics about the unspent transaction output set. Note this call may take some time. https://developer.bitcoin.org/reference/rpc/gettxoutsetinfo.html */
   gettxoutsetinfo: ({
     hash_type,
   }?: {
-    /** Which UTXO set hash should be calculated. Options: 'hash_serialized_2' (the legacy algorithm) 'none' — defaults to `hash_serialized_2` */
+    /** Which UTXO set hash should be calculated. Options: 'hash_serialized_2' (the legacy algorithm), 'none' — defaults to `hash_serialized_2` */
     hash_type?: string;
   }) => Promise<any>;
   /**  https://developer.bitcoin.org/reference/rpc/getunconfirmedbalance.html */
@@ -596,7 +596,7 @@ export interface RpcCallSpec {
   help: ({
     command,
   }?: {
-    /** The command to get help on — defaults to `commands` */
+    /** The command to get help on — defaults to `all commands` */
     command?: string;
   }) => Promise<any>;
   /** Adds an address or script (in hex) that can be watched as if it were in your wallet but cannot be used to spend. Requires a new wallet backup. https://developer.bitcoin.org/reference/rpc/importaddress.html */
@@ -617,7 +617,7 @@ export interface RpcCallSpec {
     requests,
   }: {
     /** Data to be imported — required */
-    requests: JSON;
+    requests: JSON[];
   }) => Promise<any>;
   /** Import addresses/scripts (with private or public keys, redeem script (P2SH)), optionally rescanning the blockchain from the earliest creation time of the imported scripts. Requires a new wallet backup. If an address/script is imported without all of the private keys required to spend from that address, it will be watchonly. The 'watchonly' option must be set to true in this case or a warning will be returned. Conversely, if all the private keys are provided and the address/script is spendable, the watchonly option must be set to false, or a warning will be returned. https://developer.bitcoin.org/reference/rpc/importmulti.html */
   importmulti: ({
@@ -625,7 +625,7 @@ export interface RpcCallSpec {
     options,
   }?: {
     /** Data to be imported — required */
-    requests: JSON;
+    requests: JSON[];
     /** defaults to `optional` */
     options?: JSON;
   }) => Promise<any>;
@@ -637,7 +637,7 @@ export interface RpcCallSpec {
   }?: {
     /** The private key (see dumpprivkey) — required */
     privkey: string;
-    /** An optional label — defaults to `""` */
+    /** An optional label — defaults to `otherwise ""` */
     label?: string;
     /** Rescan the wallet for transactions — defaults to `true` */
     rescan?: boolean;
@@ -677,7 +677,7 @@ export interface RpcCallSpec {
     txs,
   }: {
     /** The base64 strings of partially signed transactions — required */
-    txs: JSON;
+    txs: JSON[];
   }) => Promise<any>;
   /** Fills the keypool. Requires wallet passphrase to be set with walletpassphrase call if wallet is encrypted. https://developer.bitcoin.org/reference/rpc/keypoolrefill.html */
   keypoolrefill: ({
@@ -694,7 +694,7 @@ export interface RpcCallSpec {
   listlabels: ({
     purpose,
   }?: {
-    /** Address purpose to list labels for ('send''receive'). An empty string is the same as not providing this argument — defaults to `optional` */
+    /** Address purpose to list labels for ('send','receive'). An empty string is the same as not providing this argument — defaults to `optional` */
     purpose?: string;
   }) => Promise<any>;
   /** Returns list of temporarily unspendable outputs. See the lockunspent call to lock and unlock transactions for spending. https://developer.bitcoin.org/reference/rpc/listlockunspent.html */
@@ -710,9 +710,9 @@ export interface RpcCallSpec {
     minconf?: number;
     /** Whether to include addresses that haven't received any payments — defaults to `false` */
     include_empty?: boolean;
-    /** Whether to include watch-only addresses (see 'importaddress') — defaults to `false` */
+    /** Whether to include watch-only addresses (see 'importaddress') — defaults to `otherwise false` */
     include_watchonly?: boolean;
-    /** If present only return information on this address — defaults to `optional` */
+    /** If present, only return information on this address — defaults to `optional` */
     address_filter?: string;
   }) => Promise<any>;
   /** List received transactions by label. https://developer.bitcoin.org/reference/rpc/listreceivedbylabel.html */
@@ -725,7 +725,7 @@ export interface RpcCallSpec {
     minconf?: number;
     /** Whether to include labels that haven't received any payments — defaults to `false` */
     include_empty?: boolean;
-    /** Whether to include watch-only addresses (see 'importaddress') — defaults to `false` */
+    /** Whether to include watch-only addresses (see 'importaddress') — defaults to `otherwise false` */
     include_watchonly?: boolean;
   }) => Promise<any>;
   /** Get all transactions in blocks since block [blockhash], or all transactions if omitted. If "blockhash" is no longer a part of the main chain, transactions from the fork point onward are included. Additionally, if include_removed is set, transactions affecting the wallet which were removed are returned in the "removed" array. https://developer.bitcoin.org/reference/rpc/listsinceblock.html */
@@ -735,11 +735,11 @@ export interface RpcCallSpec {
     include_watchonly,
     include_removed,
   }?: {
-    /** If set the block hash to list transactions since otherwise list all transactions — defaults to `optional` */
+    /** If set, the block hash to list transactions since, otherwise list all transactions — defaults to `optional` */
     blockhash?: string;
-    /** Return the nth block hash from the main chain. e.g. 1 would mean the best block hash. Note: this is not used as a filter but only affects [lastblock] in the return value — defaults to `1` */
+    /** Return the nth block hash from the main chain. e.g. 1 would mean the best block hash. Note: this is not used as a filter, but only affects [lastblock] in the return value — defaults to `1` */
     target_confirmations?: number;
-    /** Include transactions to watch-only addresses (see 'importaddress') — defaults to `false` */
+    /** Include transactions to watch-only addresses (see 'importaddress') — defaults to `otherwise false` */
     include_watchonly?: boolean;
     /** Show transactions that were removed due to a reorg in the "removed" array — defaults to `true` */
     include_removed?: boolean;
@@ -751,13 +751,13 @@ export interface RpcCallSpec {
     skip,
     include_watchonly,
   }?: {
-    /** If set should be a valid label name to return only incoming transactions — defaults to `optional` */
+    /** If set, should be a valid label name to return only incoming transactions — defaults to `optional` */
     label?: string;
     /** The number of transactions to return — defaults to `10` */
     count?: number;
     /** The number of transactions to skip — defaults to `0` */
     skip?: number;
-    /** Include transactions to watch-only addresses (see 'importaddress') — defaults to `false` */
+    /** Include transactions to watch-only addresses (see 'importaddress') — defaults to `otherwise false` */
     include_watchonly?: boolean;
   }) => Promise<any>;
   /** Returns array of unspent transaction outputs. with between minconf and maxconf (inclusive) confirmations. Optionally filter to only include txouts paid to specified addresses. https://developer.bitcoin.org/reference/rpc/listunspent.html */
@@ -772,8 +772,8 @@ export interface RpcCallSpec {
     minconf?: number;
     /** The maximum confirmations to filter — defaults to `9999999` */
     maxconf?: number;
-    /** The bitcoin addresses to filter — defaults to `array` */
-    addresses?: JSON;
+    /** The bitcoin addresses to filter — defaults to `empty array` */
+    addresses?: JSON[];
     /** Include outputs that are not safe to spend — defaults to `true` */
     include_unsafe?: boolean;
     /** JSON with query options — defaults to `optional` */
@@ -790,7 +790,7 @@ export interface RpcCallSpec {
   }?: {
     /** The wallet directory or .dat file — required */
     filename: string;
-    /** Save wallet name to persistent settings and load on startup. True to add wallet to startup list false to remove null to leave unchanged — defaults to `null` */
+    /** Save wallet name to persistent settings and load on startup. True to add wallet to startup list, false to remove, null to leave unchanged — defaults to `null` */
     load_on_startup?: boolean;
   }) => Promise<any>;
   /** Updates list of temporarily unspendable outputs. Temporarily lock (unlock=false) or unlock (unlock=true) specified transaction outputs. If no transaction outputs are specified when unlocking then all current locked transaction outputs are unlocked. A locked transaction output will not be chosen by automatic coin selection, when spending bitcoins. Manually selected coins are automatically unlocked. Locks are stored in memory only. Nodes start with zero locked outputs, and the locked output list. is always cleared (by virtue of process exit) when a node stops or fails. Also see the listunspent call. https://developer.bitcoin.org/reference/rpc/lockunspent.html */
@@ -800,8 +800,8 @@ export interface RpcCallSpec {
   }?: {
     /** Whether to unlock (true) or lock (false) the specified transactions — required */
     unlock: boolean;
-    /** The transaction outputs and within each the txid (string) vout (numeric) — defaults to `array` */
-    transactions?: JSON;
+    /** The transaction outputs and within each, the txid (string) vout (numeric) — defaults to `empty array` */
+    transactions?: JSON[];
   }) => Promise<any>;
   /** Arguments:. 1. include                    (json array, optional) The categories to add to debug logging.      [.        "include_category",    (string) the valid logging category.        ...      ]. 2. exclude                    (json array, optional) The categories to remove from debug logging.      [.        "exclude_category",    (string) the valid logging category.        ...      ]. https://developer.bitcoin.org/reference/rpc/logging.html */
   logging: ({
@@ -809,9 +809,9 @@ export interface RpcCallSpec {
     exclude,
   }?: {
     /** The categories to add to debug logging — defaults to `optional` */
-    include?: JSON;
+    include?: JSON[];
     /** The categories to remove from debug logging — defaults to `optional` */
-    exclude?: JSON;
+    exclude?: JSON[];
   }) => Promise<any>;
   /** Requests that a ping be sent to all other nodes, to measure ping time. Results provided in getpeerinfo, pingtime and pingwait fields are decimal seconds. Ping command is handled in queue with all other commands, so it measures processing backlog, not just network ping. https://developer.bitcoin.org/reference/rpc/ping.html */
   ping: () => Promise<any>;
@@ -832,14 +832,14 @@ export interface RpcCallSpec {
     txid: string;
     /** API-Compatibility for previous API. Must be zero or null — defaults to `optional` */
     dummy?: number;
-    /** The fee value (in satoshis) to add (or subtract if negative) — required */
+    /** The fee value (in satoshis) to add (or subtract, if negative) — required */
     fee_delta: number;
   }) => Promise<any>;
   /** Arguments:. 1. height    (numeric, required) The block height to prune up to. May be set to a discrete height, or to a UNIX epoch time.              to prune blocks whose block time is at least 2 hours older than the provided timestamp. https://developer.bitcoin.org/reference/rpc/pruneblockchain.html */
   pruneblockchain: ({
     height,
   }: {
-    /** The block height to prune up to. May be set to a discrete height or to a UNIX epoch time — required */
+    /** The block height to prune up to. May be set to a discrete height, or to a UNIX epoch time — required */
     height: number;
   }) => Promise<any>;
   /** Bumps the fee of an opt-in-RBF transaction T, replacing it with a new transaction B. Returns a PSBT instead of creating and signing a new transaction. An opt-in RBF transaction with the given txid must be in the wallet. The command will pay the additional fee by reducing change outputs or adding inputs when necessary. It may add a new change output if one does not already exist. All inputs in the original transaction will be included in the replacement transaction. The command will fail if the wallet or mempool contains a transaction that spends one of T's outputs. By default, the new fee will be calculated automatically using the estimatesmartfee RPC. The user can specify a confirmation target for estimatesmartfee. Alternatively, the user can specify a fee rate in sat/vB for the new transaction. At a minimum, the new fee rate must be high enough to pay an additional new relay fee (incrementalfee. returned by getnetworkinfo) to enter the node's mempool. * WARNING: before version 0.21, fee_rate was in BTC/kvB. As of 0.21, fee_rate is in sat/vB. *. https://developer.bitcoin.org/reference/rpc/psbtbumpfee.html */
@@ -878,8 +878,8 @@ export interface RpcCallSpec {
   }?: {
     /** The action to execute — required */
     action: string;
-    /** Array of scan objects. Required for "start" action — defaults to `array` */
-    scanobjects?: JSON;
+    /** Array of scan objects. Required for "start" action — defaults to `json array` */
+    scanobjects?: JSON[];
   }) => Promise<any>;
   /** EXPERIMENTAL warning: this call may be changed in future releases. https://developer.bitcoin.org/reference/rpc/send.html */
   send: ({
@@ -889,14 +889,14 @@ export interface RpcCallSpec {
     fee_rate,
     options,
   }?: {
-    /** The outputs (key-value pairs) where none of the keys are duplicated — required */
-    outputs: JSON;
-    /** Confirmation target in blocks — defaults to `-txconfirmtarget` */
+    /** The outputs (key-value pairs), where none of the keys are duplicated — required */
+    outputs: JSON[];
+    /** Confirmation target in blocks — defaults to `wallet -txconfirmtarget` */
     conf_target?: number;
-    /** The fee estimate mode must be one of (case insensitive): — defaults to `unset` */
+    /** The fee estimate mode, must be one of (case insensitive): — defaults to `unset` */
     estimate_mode?: string;
-    /** Specify a fee rate in sat/vB — defaults to `estimation` */
-    fee_rate?: number;
+    /** Specify a fee rate in sat/vB — defaults to `fall back to wallet fee estimation` */
+    fee_rate?: number | string;
     /** defaults to `optional` */
     options?: JSON;
   }) => Promise<any>;
@@ -922,16 +922,16 @@ export interface RpcCallSpec {
     /** A comment — defaults to `optional` */
     comment?: string;
     /** The addresses — defaults to `optional` */
-    subtractfeefrom?: JSON;
-    /** Allow this transaction to be replaced by a transaction with higher fees via BIP 125 — defaults to `default` */
+    subtractfeefrom?: JSON[];
+    /** Allow this transaction to be replaced by a transaction with higher fees via BIP 125 — defaults to `wallet default` */
     replaceable?: boolean;
-    /** Confirmation target in blocks — defaults to `-txconfirmtarget` */
+    /** Confirmation target in blocks — defaults to `wallet -txconfirmtarget` */
     conf_target?: number;
-    /** The fee estimate mode must be one of (case insensitive): — defaults to `unset` */
+    /** The fee estimate mode, must be one of (case insensitive): — defaults to `unset` */
     estimate_mode?: string;
-    /** Specify a fee rate in sat/vB — defaults to `estimation` */
-    fee_rate?: number;
-    /** If true return extra infomration about the transaction — defaults to `false` */
+    /** Specify a fee rate in sat/vB — defaults to `fall back to wallet fee estimation` */
+    fee_rate?: number | string;
+    /** If true, return extra infomration about the transaction — defaults to `false` */
     verbose?: boolean;
   }) => Promise<any>;
   /** Submit a raw transaction (serialized, hex-encoded) to local node and network. https://developer.bitcoin.org/reference/rpc/sendrawtransaction.html */
@@ -941,8 +941,8 @@ export interface RpcCallSpec {
   }?: {
     /** The hex string of the raw transaction — required */
     hexstring: string;
-    /** Reject transactions whose fee rate is higher than the specified value expressed in BTC/kB — defaults to `0.10` */
-    maxfeerate?: number;
+    /** Reject transactions whose fee rate is higher than the specified value, expressed in BTC/kB — defaults to `0.10` */
+    maxfeerate?: number | string;
   }) => Promise<any>;
   /** Send an amount to a given address. Requires wallet passphrase to be set with walletpassphrase call if wallet is encrypted. https://developer.bitcoin.org/reference/rpc/sendtoaddress.html */
   sendtoaddress: ({
@@ -961,24 +961,24 @@ export interface RpcCallSpec {
     /** The bitcoin address to send to — required */
     address: string;
     /** The amount in BTC to send. eg 0.1 — required */
-    amount: number;
+    amount: number | string;
     /** A comment used to store what the transaction is for — defaults to `optional` */
     comment?: string;
     /** A comment to store the name of the person or organization — defaults to `optional` */
     comment_to?: string;
     /** The fee will be deducted from the amount being sent — defaults to `false` */
     subtractfeefromamount?: boolean;
-    /** Allow this transaction to be replaced by a transaction with higher fees via BIP 125 — defaults to `default` */
+    /** Allow this transaction to be replaced by a transaction with higher fees via BIP 125 — defaults to `wallet default` */
     replaceable?: boolean;
-    /** Confirmation target in blocks — defaults to `-txconfirmtarget` */
+    /** Confirmation target in blocks — defaults to `wallet -txconfirmtarget` */
     conf_target?: number;
-    /** The fee estimate mode must be one of (case insensitive): — defaults to `unset` */
+    /** The fee estimate mode, must be one of (case insensitive): — defaults to `unset` */
     estimate_mode?: string;
     /** (only available if avoid_reuse wallet flag is set) Avoid spending from dirty addresses; addresses are considered — defaults to `true` */
     avoid_reuse?: boolean;
-    /** Specify a fee rate in sat/vB — defaults to `estimation` */
-    fee_rate?: number;
-    /** If true return extra information about the transaction — defaults to `false` */
+    /** Specify a fee rate in sat/vB — defaults to `fall back to wallet fee estimation` */
+    fee_rate?: number | string;
+    /** If true, return extra information about the transaction — defaults to `false` */
     verbose?: boolean;
   }) => Promise<any>;
   /** Attempts to add or remove an IP/Subnet from the banned list. https://developer.bitcoin.org/reference/rpc/setban.html */
@@ -990,11 +990,11 @@ export interface RpcCallSpec {
   }?: {
     /** The IP/Subnet (see getpeerinfo for nodes IP) with an optional netmask (default is /32 = single IP) — required */
     subnet: string;
-    /** 'add' to add an IP/Subnet to the list 'remove' to remove an IP/Subnet from the list — required */
+    /** 'add' to add an IP/Subnet to the list, 'remove' to remove an IP/Subnet from the list — required */
     command: string;
     /** time in seconds how long (or until when if [absolute] is set) the IP is banned (0 or empty means using the default time of 24h which can also be overwritten by the -bantime startup argument) — defaults to `0` */
     bantime?: number;
-    /** If set the bantime must be an absolute timestamp expressed in UNIX epoch time — defaults to `false` */
+    /** If set, the bantime must be an absolute timestamp expressed in UNIX epoch time — defaults to `false` */
     absolute?: boolean;
   }) => Promise<any>;
   /** Set or generate a new HD wallet seed. Non-HD wallets will not be upgraded to being a HD wallet. Wallets that are already. HD will have a new HD seed set so that new keys added to the keypool will be derived from this new seed. https://developer.bitcoin.org/reference/rpc/sethdseed.html */
@@ -1002,9 +1002,9 @@ export interface RpcCallSpec {
     newkeypool,
     seed,
   }?: {
-    /** Whether to flush old unused addresses including change addresses from the keypool and regenerate it — defaults to `true` */
+    /** Whether to flush old unused addresses, including change addresses, from the keypool and regenerate it — defaults to `true` */
     newkeypool?: boolean;
-    /** The WIF private key to use as the new HD seed — defaults to `seed` */
+    /** The WIF private key to use as the new HD seed — defaults to `random seed` */
     seed?: string;
   }) => Promise<any>;
   /** Sets the label associated with the given address. https://developer.bitcoin.org/reference/rpc/setlabel.html */
@@ -1021,7 +1021,7 @@ export interface RpcCallSpec {
   setnetworkactive: ({
     state,
   }: {
-    /** true to enable networking false to disable — required */
+    /** true to enable networking, false to disable — required */
     state: boolean;
   }) => Promise<any>;
   /** Set the transaction fee per kB for this wallet. Overrides the global -paytxfee command line parameter. Can be deactivated by passing 0 as the fee. In that case automatic fee selection will be used by default. https://developer.bitcoin.org/reference/rpc/settxfee.html */
@@ -1029,7 +1029,7 @@ export interface RpcCallSpec {
     amount,
   }: {
     /** The transaction fee in BTC/kvB — required */
-    amount: number;
+    amount: number | string;
   }) => Promise<any>;
   /** Change the state of the given wallet flag for a wallet. https://developer.bitcoin.org/reference/rpc/setwalletflag.html */
   setwalletflag: ({
@@ -1071,9 +1071,9 @@ export interface RpcCallSpec {
     /** The transaction hex string — required */
     hexstring: string;
     /** The base58-encoded private keys for signing — required */
-    privkeys: JSON;
+    privkeys: JSON[];
     /** The previous dependent transaction outputs — defaults to `optional` */
-    prevtxs?: JSON;
+    prevtxs?: JSON[];
     /** The signature hash type. Must be one of: — defaults to `ALL` */
     sighashtype?: string;
   }) => Promise<any>;
@@ -1086,7 +1086,7 @@ export interface RpcCallSpec {
     /** The transaction hex string — required */
     hexstring: string;
     /** The previous dependent transaction outputs — defaults to `optional` */
-    prevtxs?: JSON;
+    prevtxs?: JSON[];
     /** The signature hash type. Must be one of — defaults to `ALL` */
     sighashtype?: string;
   }) => Promise<any>;
@@ -1099,7 +1099,7 @@ export interface RpcCallSpec {
   }?: {
     /** the hex-encoded block data to submit — required */
     hexdata: string;
-    /** dummy value for compatibility with BIP22. This value is ignored — defaults to `ignored` */
+    /** dummy value, for compatibility with BIP22. This value is ignored — defaults to `ignored` */
     dummy?: string;
   }) => Promise<any>;
   /** Decode the given hexdata as a header and submit it as a candidate chain tip if valid. Throws when the header is invalid. https://developer.bitcoin.org/reference/rpc/submitheader.html */
@@ -1115,18 +1115,18 @@ export interface RpcCallSpec {
     maxfeerate,
   }?: {
     /** An array of hex strings of raw transactions — required */
-    rawtxs: JSON;
-    /** Reject transactions whose fee rate is higher than the specified value expressed in BTC/kB — defaults to `0.10` */
-    maxfeerate?: number;
+    rawtxs: JSON[];
+    /** Reject transactions whose fee rate is higher than the specified value, expressed in BTC/kB — defaults to `0.10` */
+    maxfeerate?: number | string;
   }) => Promise<any>;
   /** Result:. {                       (json object).   "warning" : "str"     (string) Warning message if wallet was not unloaded cleanly. }. https://developer.bitcoin.org/reference/rpc/unloadwallet.html */
   unloadwallet: ({
     wallet_name,
     load_on_startup,
   }?: {
-    /** The name of the wallet to unload. Must be provided in the RPC endpoint or this parameter (but not both) — defaults to `endpoint` */
+    /** The name of the wallet to unload. Must be provided in the RPC endpoint or this parameter (but not both) — defaults to `the wallet name from the RPC endpoint` */
     wallet_name?: string;
-    /** Save wallet name to persistent settings and load on startup. True to add wallet to startup list false to remove null to leave unchanged — defaults to `null` */
+    /** Save wallet name to persistent settings and load on startup. True to add wallet to startup list, false to remove, null to leave unchanged — defaults to `null` */
     load_on_startup?: boolean;
   }) => Promise<any>;
   /** Upgrade the wallet. Upgrades to the latest version if no version number is specified. New keys may be generated and a new wallet backup will need to be made. Arguments:. 1. version    (numeric, optional, default=169900) The version number to upgrade to. Default is the latest wallet version. https://developer.bitcoin.org/reference/rpc/upgradewallet.html */
@@ -1146,7 +1146,7 @@ export interface RpcCallSpec {
     /** A base64 string of a PSBT — required */
     psbt: string;
     /** An array of either strings or objects — defaults to `optional` */
-    descriptors?: JSON;
+    descriptors?: JSON[];
   }) => Promise<any>;
   /** Return information about the given bitcoin address. https://developer.bitcoin.org/reference/rpc/validateaddress.html */
   validateaddress: ({
@@ -1193,9 +1193,9 @@ export interface RpcCallSpec {
     options,
   }?: {
     /** Leave empty to add inputs automatically. See add_inputs option — defaults to `optional` */
-    inputs?: JSON;
-    /** The outputs (key-value pairs) where none of the keys are duplicated — required */
-    outputs: JSON;
+    inputs?: JSON[];
+    /** The outputs (key-value pairs), where none of the keys are duplicated — required */
+    outputs: JSON[];
     /** Raw locktime. Non-0 value also locktime-activates inputs — defaults to `0` */
     locktime?: number;
     /** defaults to `optional` */
