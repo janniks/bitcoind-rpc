@@ -1,39 +1,34 @@
 {
   "name": "@btc-helpers/rpc",
-  "description": "Bitcoin Client Library to connect to Bitcoin Core via RPC",
-  "version": "1.0.2",
+  "version": "2.0.0",
+  "description": "A somewhat typesafe Bitcoin RPC library",
+  "license": "MIT",
+  "scripts": {
+    "build": "tsc --emitDeclarationOnly --declaration && tsup lib/index.ts",
+    "prepublishOnly": "npm run build"
+  },
+  "dependencies": {
+    "@scure/base": "^1.1.1",
+    "cross-fetch": "^3.1.5"
+  },
+  "devDependencies": {
+    "tsup": "^6.5.0",
+    "typescript": "^4.9.4"
+  },
+  "main": "dist/index.js",
+  "files": [
+    "dist"
+  ],
   "keywords": [
     "bitcoin",
-    "rpc"
+    "rpc",
+    "typescript"
   ],
   "repository": {
     "type": "git",
     "url": "https://github.com/janniks/bitcoind-rpc"
   },
-  "license": "MIT",
-  "main": "dist/index.js",
-  "files": [
-    "dist"
-  ],
-  "scripts": {
-    "build": "tsc --emitDeclarationOnly --declaration && tsup lib/index.ts",
-    "prepublishOnly": "npm run build"
-  },
-  "devDependencies": {
-    "async": "^0.9.0",
-    "chai": "^1.10.0",
-    "coveralls": "^2.11.2",
-    "istanbul": "^0.4.5",
-    "mocha": "^2.1.0",
-    "sinon": "^1.12.2",
-    "tsup": "^6.5.0",
-    "typescript": "^4.9.4"
-  },
   "bugs": {
     "url": "https://github.com/janniks/bitcoind-rpc/issues"
-  },
-  "dependencies": {
-    "@scure/base": "^1.1.1",
-    "cross-fetch": "^3.1.5"
   }
 }

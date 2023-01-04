@@ -62,13 +62,14 @@ export default class RpcClient {
     // }
   }
 
-  get CallSpec() {
+  get Typed() {
     return new Proxy(this, {
       get(target, property, receiver) {
         if (property in target) return Reflect.get(target, property, receiver);
 
-        return async function (...params: JSON[]) {
+        return async function (params: Object) {
           return await target.call({
+            jsonrpc: "2.0",
             method: property.toString().toLowerCase(),
             params,
             id: getRandomId(),
@@ -104,29 +105,29 @@ export default class RpcClient {
       options
     );
 
-    console.log(res);
-
     if (res.status === 401) {
       throw new Error(errorPrefix + "Connection Rejected: 401 Unnauthorized");
     }
     if (res.status === 403) {
       throw new Error(errorPrefix + "Connection Rejected: 403 Forbidden");
     }
+
+    const text = await res.text();
+
     if (res.status === 500) {
-      const text = await res.text();
       if (text === "Work queue depth exceeded") {
-        const exceededError = new Error("Bitcoin JSON-RPC: " + text);
+        const exceededError = new Error(errorPrefix + text);
         (exceededError as any).code = 429; // Too many requests
         throw exceededError;
       }
     }
 
-    try {
-      if (!res.ok) throw new Error(errorPrefix + "Error: " + res.statusText);
-      return await res.json();
-    } catch (err) {
-      throw new Error(errorPrefix + "Error Parsing JSON", { cause: err });
-    }
+    const json = JSON.parse(text);
+    if (!res.ok)
+      throw new Error(
+        `${errorPrefix}${json?.error?.code} ${json?.error?.message}`
+      );
+    return json.result;
   }
 }
 
@@ -169,6 +170,10 @@ function getRandomId() {
 
 // // USAGE
 // (async () => {
-//   const rpc = new RpcClient("http://devnet:devnet@localhost:8332").CallSpec;
-//   console.log(await rpc.listunspent());
+//   const rpc = new RpcClient("http://devnet:devnet@localhost:8332").Typed;
+//   console.log(
+//     await rpc.listunspent({
+//       addresses: ["mqVnk6NPRdhntvfm4hh9vvjiRkFDUuSYsH"],
+//     })
+//   );
 // })();
